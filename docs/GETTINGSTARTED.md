@@ -126,7 +126,7 @@ print(`Replicated coins: {coins}`)
 
 Creating the client requests an initial snapshot from the server. Client wrappers are read-only: clients can read fields and subscribe to signals, but they cannot set values or call array mutation operations.
 
-`Data:IsReady()` reports whether the initial snapshot has been installed, and `Data:GetData()` returns a copy of the complete replicated data table.
+`Data:IsReady()` reports whether the initial snapshot has been installed, `Data:WaitForData(timeout?)` waits for and returns a copy of that snapshot, and `Data:GetData()` immediately returns a copy of the complete replicated data table.
 
 ## Getting a value
 

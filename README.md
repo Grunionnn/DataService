@@ -81,7 +81,10 @@ Data.PlayerInitialized:Connect(function(player)
 end)
 
 Players.PlayerAdded:Connect(function(player)
-	Data:WaitForProfile(player)
+	local snapshot = Data:WaitForData(player)
+	if snapshot then
+		print(`Loaded {snapshot.Coins} coins for {player.Name}`)
+	end
 end)
 ```
 
@@ -104,7 +107,10 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Data = require(ReplicatedStorage.Data).client
 
-local coins: number = Data.Coins()
+local snapshot = Data:WaitForData()
+assert(snapshot, "Unable to load data")
+
+local coins: number = snapshot.Coins
 
 Data.Coins.Changed:Connect(function(newCoins, oldCoins)
 	print(oldCoins, newCoins)
@@ -127,7 +133,7 @@ Public value signals expose `Connect`, `Once`, and `Wait`. Signal dispatch remai
 
 ## Current Version
 
-The current package version is `1.0.0`.
+The current package version is `1.0.1`.
 
 ## Limitations
 

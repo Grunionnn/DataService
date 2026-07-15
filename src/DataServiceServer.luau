@@ -271,6 +271,20 @@ function DataServiceServer.GetData<T>(self: DataServiceServer<T>, player: Player
 	return playerData:GetData()
 end
 
+function DataServiceServer.WaitForData<T>(self: DataServiceServer<T>, player: Player, timeout: number?): T?
+	local profile = DataServiceServer.WaitForProfile(self, player, timeout)
+	if not profile then
+		return nil
+	end
+
+	local playerData = self._playerData[player]
+	if not playerData then
+		return nil
+	end
+
+	return playerData:GetData()
+end
+
 function DataServiceServer.GetRawProfile<T>(self: DataServiceServer<T>, player: Player): profilestore.Profile<T>
 	local profile = self._profiles[player]
 	assert(profile, "Player does not have a profile")

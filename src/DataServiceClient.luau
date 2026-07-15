@@ -225,6 +225,24 @@ function DataServiceClient.IsReady<T>(self: DataServiceClient<T>): boolean
 	return self._ready
 end
 
+function DataServiceClient.WaitForData<T>(self: DataServiceClient<T>, timeout: number?): T?
+	if timeout ~= nil then
+		assert(timeout >= 0, "Timeout cannot be negative")
+	end
+
+	local startedAt = os.clock()
+
+	while not self._ready do
+		if timeout ~= nil and os.clock() - startedAt >= timeout then
+			return nil
+		end
+
+		task.wait()
+	end
+
+	return DataServiceClient.GetData(self)
+end
+
 function DataServiceClient.GetData<T>(self: DataServiceClient<T>): T
 	local dataObject = self._data
 	assert(dataObject, "Client data is not ready")

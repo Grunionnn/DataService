@@ -232,14 +232,18 @@ Named fields are exposed as read-only properties. Dictionary and array keys prod
 ### `DataService(options)`
 
 ```luau
-DataService<T>(options: Options<T>): ConfiguredData<T>
+DataService<T>(options: {
+	template: T,
+	useMock: boolean?,
+	profileStoreIndex: string?,
+}): ConfiguredData<T>
 ```
 
 **Execution:** Server construction is synchronous. Client construction requests its initial snapshot and may yield while invoking the server.
 
 Parameters:
 
-- `options: Options<T>` — template and ProfileStore configuration.
+- `options` — template and ProfileStore configuration. `T` is inferred directly from `template`; the other fields are type-checked at the call site.
 
 Returns: `ConfiguredData<T>` with the current runtime's server or client view populated.
 
@@ -382,6 +386,34 @@ Example:
 
 ```luau
 local snapshot = Data:GetData(player)
+print(snapshot.Coins)
+```
+
+### `Data:WaitForData(player, timeout?)`
+
+```luau
+Data:WaitForData(player: Player, timeout: number?): T?
+```
+
+**Execution:** Asynchronous (may yield). Returns immediately if the player's data is already initialized or the player has left.
+
+Parameters:
+
+- `player: Player` — player whose data should be awaited.
+- `timeout: number?` — maximum seconds to wait. Omit to wait until initialization, load failure, or player departure. Must not be negative.
+
+Returns: `T?`; a deep copy of the player's current data when initialization succeeds, otherwise `nil` after timeout, failure, release, or departure.
+
+Example:
+
+```luau
+local snapshot = Data:WaitForData(player, 30)
+
+if not snapshot then
+	warn(`Data was not ready for {player.Name}`)
+	return
+end
+
 print(snapshot.Coins)
 ```
 
@@ -689,6 +721,33 @@ Example:
 
 ```luau
 local snapshot = Data:GetData()
+print(snapshot.Coins)
+```
+
+### `Data:WaitForData(timeout?)`
+
+```luau
+Data:WaitForData(timeout: number?): T?
+```
+
+**Execution:** Asynchronous (may yield). Waits until the original server snapshot has been installed.
+
+Parameters:
+
+- `timeout: number?` — maximum seconds to wait. Omit to wait indefinitely. Must not be negative.
+
+Returns: `T?`; a deep copy of the replicated data after the original snapshot is ready, otherwise `nil` after the timeout.
+
+Example:
+
+```luau
+local snapshot = Data:WaitForData(30)
+
+if not snapshot then
+	warn("Initial data snapshot was not ready")
+	return
+end
+
 print(snapshot.Coins)
 ```
 

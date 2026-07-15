@@ -3,7 +3,7 @@ name = "grunionnn/dataservice"
 description = "Type-safe Roblox data-store wrapper with automatic client replication, nested value wrappers, signals, arrays, and mock-store support"
 license = "MIT"
 authors = ["Grunion"]
-version = "1.0.0"
+version = "1.0.1"
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
 
